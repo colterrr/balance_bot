@@ -1,0 +1,24 @@
+{
+    "files.associations": {
+        "string.h": "c",
+        "main.h": "c",
+        "cstdint": "c",
+        "usart.h": "c",
+        "math.h": "c",
+        "bsp_iic.h": "c",
+        "tim.h": "c",
+        "myfunc.h": "c",
+        "mahonyahrs.h": "c",
+        "gpio.h": "c",
+        "inv_mpu.h": "c",
+        "stm32h7xx_hal.h": "c",
+        "foc.h": "c",
+        "arm_math.h": "c",
+        "bsp_pwm.h": "c",
+        "stdint.h": "c",
+        "lqr.h": "c",
+        "cvector.h": "c",
+        "inv_mpu_dmp_motion_driver.h": "c",
+        "bsp_gpio.h": "c"
+    }
+}
