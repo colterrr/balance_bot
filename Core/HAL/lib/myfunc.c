@@ -33,7 +33,7 @@
 void delay_us(uint32_t us)
 {
     __HAL_TIM_DISABLE(&htim5);
-    __HAL_TIM_SET_COUNTER(&htim5 ,0);
+    __HAL_TIM_SET_COUNTER(&htim5, 0);
     __HAL_TIM_ENABLE(&htim5);
     while(__HAL_TIM_GetCounter(&htim5) < us);
 }
@@ -42,4 +42,12 @@ void delay_us(uint32_t us)
 void delay_ms(uint16_t ms)
 {
     delay_us(1000*ms);
+}
+
+void delay_ms_sss(uint16_t ms)
+{
+    __HAL_TIM_DISABLE(&htim6);
+    __HAL_TIM_SET_COUNTER(&htim6, 0);
+    __HAL_TIM_ENABLE(&htim6);
+    while(__HAL_TIM_GetCounter(&htim6) < 10*ms);
 }

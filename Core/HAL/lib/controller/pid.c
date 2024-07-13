@@ -1,9 +1,10 @@
 #include "pid.h"
 #include "string.h"
+#include "stdlib.h"
 
 pid* PID_Create(pid_config pid_config)
 {
-    pid* obj = malloc(sizeof(obj));
+    pid* obj = malloc(sizeof(pid));
     memset(obj, 0, sizeof(pid));
     obj->config = pid_config;
     return obj;

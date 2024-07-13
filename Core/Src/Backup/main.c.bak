@@ -18,7 +18,9 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "cmsis_os.h"
 #include "dma.h"
+#include "fdcan.h"
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
@@ -26,10 +28,11 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "myfunc.h"
-#include "imu.h"
-#include "string.h"
+#include "bsp.h"
+#include "hal.h"
+#include "instance.h"
 #include "stm32h7xx_hal_usart.h"
-#include "encoder.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -51,8 +54,7 @@
 /* USER CODE BEGIN PV */
 uint32_t tick = 0;
 uint32_t time = 0;
-imu_atk* imuu;
-encoder* as5600;
+
 __section(".buffer_used") uint8_t rxbuf[100] = {};
 __section(".buffer_used") uint8_t txbuf[5] = {};
 
@@ -61,6 +63,7 @@ HAL_StatusTypeDef aaa;
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
+void MX_FREERTOS_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -102,10 +105,12 @@ int main(void)
   MX_DMA_Init();
   MX_TIM5_Init();
   MX_TIM1_Init();
+  MX_TIM6_Init();
+  MX_FDCAN1_Init();
   /* USER CODE BEGIN 2 */
-  IMU_Init();
-  Encoder_Init();
-  imuu = imu_Create();
+  BSP_Init();
+  HAL_my_Init();
+  Instance_init();
 // HAL_DMA_DeInit(huart1.hdmarx);
 // HAL_DMA_DeInit(huart1.hdmatx);
 // HAL_DMA_Init(huart1.hdmarx);
@@ -114,9 +119,17 @@ int main(void)
 //   HAL_UART_Receive_DMA(&huart1, rxbuf, 100);
   
   //__USART_DISABLE_IT(&huart1, UART_IT_ERR);
-  as5600 = Encoder_Create(1, GPIOD, GPIO_PIN_4, GPIOD, GPIO_PIN_3);
+
   /* USER CODE END 2 */
 
+  /* Init scheduler */
+  osKernelInitialize();  /* Call init function for freertos objects (in freertos.c) */
+  MX_FREERTOS_Init();
+
+  /* Start scheduler */
+  osKernelStart();
+
+  /* We should never get here as control is now taken by the scheduler */
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
@@ -127,8 +140,6 @@ int main(void)
     //memcpy(txbuf, "12", 2);
     //aaa = HAL_UART_Transmit_DMA(&huart1, txbuf, 2);
     //delay_ms(600);
-    IMU_Update();
-    Encoder_Update();
     delay_ms(1);
   }
   /* USER CODE END 3 */
@@ -153,11 +164,6 @@ void SystemClock_Config(void)
 
   while(!__HAL_PWR_GET_FLAG(PWR_FLAG_VOSRDY)) {}
 
-  __HAL_RCC_SYSCFG_CLK_ENABLE();
-  __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE0);
-
-  while(!__HAL_PWR_GET_FLAG(PWR_FLAG_VOSRDY)) {}
-
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
   */
@@ -165,10 +171,10 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-  RCC_OscInitStruct.PLL.PLLM = 5;
-  RCC_OscInitStruct.PLL.PLLN = 192;
+  RCC_OscInitStruct.PLL.PLLM = 2;
+  RCC_OscInitStruct.PLL.PLLN = 200;
   RCC_OscInitStruct.PLL.PLLP = 2;
-  RCC_OscInitStruct.PLL.PLLQ = 2;
+  RCC_OscInitStruct.PLL.PLLQ = 8;
   RCC_OscInitStruct.PLL.PLLR = 2;
   RCC_OscInitStruct.PLL.PLLRGE = RCC_PLL1VCIRANGE_2;
   RCC_OscInitStruct.PLL.PLLVCOSEL = RCC_PLL1VCOWIDE;
@@ -191,7 +197,7 @@ void SystemClock_Config(void)
   RCC_ClkInitStruct.APB2CLKDivider = RCC_APB2_DIV2;
   RCC_ClkInitStruct.APB4CLKDivider = RCC_APB4_DIV2;
 
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_4) != HAL_OK)
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK)
   {
     Error_Handler();
   }

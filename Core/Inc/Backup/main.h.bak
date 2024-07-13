@@ -57,10 +57,10 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define SDA_Pin GPIO_PIN_3
-#define SDA_GPIO_Port GPIOD
-#define SCL_Pin GPIO_PIN_4
-#define SCL_GPIO_Port GPIOD
+#define ENCODER_SDA_Pin GPIO_PIN_3
+#define ENCODER_SDA_GPIO_Port GPIOD
+#define ENCODER_SCL_Pin GPIO_PIN_4
+#define ENCODER_SCL_GPIO_Port GPIOD
 #define DIR_Pin GPIO_PIN_5
 #define DIR_GPIO_Port GPIOD
 #define I2C_IMU_SCL_Pin GPIO_PIN_6

@@ -4,35 +4,64 @@
 #include "stdint.h"
 #include "arm_math.h"
 
+#include "pid.h"
+
 #define SQRT_3 1.73205
 
-typedef struct vector_2len_dq_s
+typedef enum ctrl_type_e
+{
+    CURRENT_CLOSE = 0, //电流闭环
+    VOLTAGE_OPEN       //电压开环 
+}ctrl_type;
+
+
+typedef struct vector_dq_s
 {
     float32_t q;
     float32_t d;
-}vector_2len_dq;
+}vector_dq;
 
-typedef struct vector_2len_ab_s
+typedef struct vector_ab_s
 {
     float32_t alpha;
     float32_t beta;
-}vector_2len_ab;
+}vector_ab;
 
-typedef struct vector_3len_s
+typedef struct vector_abc_s
 {
     float32_t a;
     float32_t b;
     float32_t c;
-}vector_3len;
+}vector_abc;
+
+typedef struct foc_config_s
+{
+    ctrl_type foc_type;
+    uint8_t index_a; //a相pwm索引号
+    uint8_t index_b; //b相pwm索引号
+    uint8_t index_c; //c相pwm索引号
+}foc_config;
+
 
 typedef struct foc_s
 {
+    //通用参数
+    foc_config config; //配置结构体
+    float angle_dq; //dq系电角度，需要外部更新
+    float angle_ab; //ab系电角度，需要外部更新
+    float d_theta; //dq系和ab系夹角
+
+    float a;
+    float b;
     //电压开环
-    uint16_t* angle_p;
+
     //电流闭环
+    pid* cur;
 }foc;
 
-void anti_park(vector_2len_dq voltage_tar, float theta, vector_2len_ab* ans);
-void anti_park_clark(vector_2len_dq voltage_tar, float theta, vector_3len* ans);
-void park_clark(vector_3len currnet_now, float theta, vector_2len_dq* ans);
+void FOC_Init();
+void FOC_Calc(foc* obj, float ref);
+foc* FOC_Create(foc_config config);
+
+uint8_t SVPWM(foc* obj, vector_ab ab);
 #endif

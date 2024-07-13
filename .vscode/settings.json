@@ -19,6 +19,11 @@
         "lqr.h": "c",
         "cvector.h": "c",
         "inv_mpu_dmp_motion_driver.h": "c",
-        "bsp_gpio.h": "c"
+        "bsp_gpio.h": "c",
+        "encoder.h": "c",
+        "bldc_motor.h": "c",
+        "imu.h": "c",
+        "stdlib.h": "c",
+        "arm_common_tables.h": "c"
     }
 }
