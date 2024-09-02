@@ -5,14 +5,14 @@
 #include "pid.h"
 #include "encoder.h"
 
-typedef enum Control_mode_e
+typedef enum
 {
-    POSITION_MODE = 0, //位置控制模式
+    TORQUE_MODE  = 0, //位置控制模式
     SPEED_MODE,        //速度控制模式
-    TORQUE_MODE        //力矩输出模式
+    POSITION_MODE      //力矩输出模式
 }Control_mode;
 
-typedef struct BLDC_motor_config_s
+typedef struct
 {
     Control_mode mode;
     uint8_t en_port;

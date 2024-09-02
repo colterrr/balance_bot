@@ -8,7 +8,7 @@
 #define RAW_ANGLE 0x0C
 #define QUEUE_NUM 5 //计算角速度队列长度
 
-typedef struct encoder_s
+typedef struct
 {
     uint8_t init_flag;
     uint16_t init_angle; //初始角度
@@ -17,6 +17,7 @@ typedef struct encoder_s
 
     uint16_t raw_angle;
     uint16_t last_angle;
+    
     float delta_sum;
     float angle_deg;
     float angle_rad;

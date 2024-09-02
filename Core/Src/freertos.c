@@ -175,13 +175,15 @@ void StartInstanceTask(void *argument)
 void StartPeripheralTask(void *argument)
 {
   /* USER CODE BEGIN StartPeripheralTask */
+  TickType_t xLastWakeTime;
+  xLastWakeTime = xTaskGetTickCount();
   /* Infinite loop */
   for(;;)
   {
     //IMU_Update();
     Encoder_Update();
     BLDC_motor_Update();
-    osDelay(1);
+    vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(1));
   }
   /* USER CODE END StartPeripheralTask */
 }

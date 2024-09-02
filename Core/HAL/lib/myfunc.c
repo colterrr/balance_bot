@@ -1,6 +1,7 @@
 #include "myfunc.h"
 #include "main.h"
-#include "tim.h"
+#include "FreeRTOS.h"
+#include "task.h"
 
 // //整型转字符，写入指定连续空间，返回长度
 // uint8_t Uint_to_Str(uint32_t num, uint8_t* place)
@@ -29,25 +30,11 @@
 //     return num;
 // }
 
-//微秒级延时
-void delay_us(uint32_t us)
-{
-    __HAL_TIM_DISABLE(&htim5);
-    __HAL_TIM_SET_COUNTER(&htim5, 0);
-    __HAL_TIM_ENABLE(&htim5);
-    while(__HAL_TIM_GetCounter(&htim5) < us);
-}
-
-//毫秒级延时
 void delay_ms(uint16_t ms)
 {
-    delay_us(1000*ms);
+    vTaskDelay(ms / portTICK_PERIOD_MS);
 }
-
-void delay_ms_sss(uint16_t ms)
+void delay_us(uint32_t us)
 {
-    __HAL_TIM_DISABLE(&htim6);
-    __HAL_TIM_SET_COUNTER(&htim6, 0);
-    __HAL_TIM_ENABLE(&htim6);
-    while(__HAL_TIM_GetCounter(&htim6) < 10*ms);
+
 }

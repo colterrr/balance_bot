@@ -24,6 +24,13 @@
         "bldc_motor.h": "c",
         "imu.h": "c",
         "stdlib.h": "c",
-        "arm_common_tables.h": "c"
+        "arm_common_tables.h": "c",
+        "fdcan.h": "c",
+        "bsp_can.h": "c",
+        "bsp_fdcan.h": "c",
+        "port_iic.h": "c",
+        "common.h": "c",
+        "bldc_motor_can.h": "c",
+        "task.h": "c"
     }
 }

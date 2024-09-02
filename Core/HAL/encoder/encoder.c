@@ -1,6 +1,6 @@
 #include "encoder.h"
 #include "cvector.h"
-#include "bsp_iic.h"
+#include "bsp.h"
 
 #define RADtoDEG 57.29578
 
@@ -8,7 +8,7 @@ cvector* encoder_ins;
 
 void Encoder_Init()
 {
-    encoder_ins = cvector_create(sizeof(encoder));
+    encoder_ins = cvector_create(sizeof(encoder*));
 }
 
 void Encoder_Update()

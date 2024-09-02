@@ -1,18 +1,61 @@
-#include "bsp_iic.h"
 #include "stdlib.h"
 #include "string.h"
 #include "myfunc.h"
+#include "stdint.h"
+#include "main.h"
 
+// 默认设置：
+// 从机地址7bit
+// 时钟周期8us
+// 时序参数如下
+// t_HIGH = t_LOW = 4us
+// t_HD-DAT = t_SU-DAT = t_HD-STA = t_SU-STA = t_HD-STO = t_SU-STO = 2us
+// t_R_SDA, t_F_SDA, t_R_SCL, t_F_SCL 忽略不计
+
+#define H_SCL HAL_GPIO_WritePin(GPIOx_CL,GPIO_Pin_CL,GPIO_PIN_SET)
+#define L_SCL HAL_GPIO_WritePin(GPIOx_CL,GPIO_Pin_CL,GPIO_PIN_RESET)
+
+#define H_SDA HAL_GPIO_WritePin(GPIOx_DA,GPIO_Pin_DA,GPIO_PIN_SET)
+#define L_SDA HAL_GPIO_WritePin(GPIOx_DA,GPIO_Pin_DA,GPIO_PIN_RESET)
+
+#define READ_DA HAL_GPIO_ReadPin(GPIOx_DA,GPIO_Pin_DA)
+
+//software_IIC_Port结构体下表示传输状态的枚举变量
+typedef enum
+{
+    IIC_ERR = 0,  //并没有发完或收完要求规模的数据，传输被接收方叫停
+    IIC_OK
+}IIC_comu_status;
+
+typedef enum
+{
+    ACK = 0,
+    NACK
+}ACK_value;
+
+typedef struct
+{
+    //uint16_t speed_kHZ;
+    uint8_t slave_ADDR;        //7位从机地址，最高位无意义
+    IIC_comu_status status;
+
+    GPIO_TypeDef* IOx_CL;
+    GPIO_TypeDef* IOx_DA;
+    uint16_t Pin_CL;
+    uint16_t Pin_DA;
+}software_IIC_Port;
+
+static GPIO_TypeDef* GPIOx_CL;
+static GPIO_TypeDef* GPIOx_DA;
+static uint16_t GPIO_Pin_CL;
+static uint16_t GPIO_Pin_DA;
+
+#define IIC_MAX_NUM 2
 software_IIC_Port IIC_port[IIC_MAX_NUM];
-
-GPIO_TypeDef* GPIOx_CL;
-GPIO_TypeDef* GPIOx_DA;
-uint16_t GPIO_Pin_CL;
-uint16_t GPIO_Pin_DA;
 
 /***SDA输出输入模式改变***/
 
-void SDA_Set_Output()
+static void SDA_Set_Output()
 {
     GPIO_InitTypeDef config ={0};
     config.Mode = GPIO_MODE_OUTPUT_PP;
@@ -23,7 +66,7 @@ void SDA_Set_Output()
     HAL_GPIO_Init(GPIOx_DA, &config);
 }
 
-void SDA_Set_Input()
+static void SDA_Set_Input()
 {
     GPIO_InitTypeDef config = {0};
     config.Mode = GPIO_MODE_INPUT;
@@ -39,7 +82,7 @@ void SDA_Set_Input()
 
 /***开始信号S和结束信号P***/
 
-void Master_Start()
+static void Master_Start()
 {
     SDA_Set_Output();
     H_SCL;
@@ -50,7 +93,7 @@ void Master_Start()
     L_SCL; //拉低SCL，利于SDA电平变化
 }
 
-void Master_Stop()
+static void Master_Stop()
 {
     SDA_Set_Output();
     L_SCL;
@@ -66,7 +109,7 @@ void Master_Stop()
 
 /***接收应答和发送应答***/
 
-void Master_N_ACK(ACK_value sig)
+static void Master_N_ACK(ACK_value sig)
 {
     SDA_Set_Output();
     L_SCL;
@@ -81,7 +124,7 @@ void Master_N_ACK(ACK_value sig)
     L_SCL;
 }
 
-uint8_t Master_wait_ACK()
+static uint8_t Master_wait_ACK()
 {
     L_SCL;
     SDA_Set_Input();
@@ -106,7 +149,7 @@ uint8_t Master_wait_ACK()
 
 /***发送和接收一个字节数据***/
 
-void Master_Transmit_Byte(uint8_t Byte)
+static void Master_Transmit_Byte(uint8_t Byte)
 {
     SDA_Set_Output();
     uint8_t i = 8;
@@ -124,7 +167,7 @@ void Master_Transmit_Byte(uint8_t Byte)
     }
 }
 
-uint8_t Master_Receive_Byte()
+static uint8_t Master_Receive_Byte()
 {
     SDA_Set_Input();
     uint8_t i = 0;

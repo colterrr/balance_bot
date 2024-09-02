@@ -4,7 +4,7 @@
 #include "string.h"
 #include "cvector.h"
 #include "myfunc.h"
-#include "bsp_gpio.h"
+#include "bsp.h"
 
 cvector* BLDC_motor_ins;
 
@@ -22,7 +22,7 @@ BLDC_motor* BLDC_motor_Create(BLDC_motor_config config)
 
 void BLDC_motor_Init()
 {
-    BLDC_motor_ins = cvector_create(sizeof(BLDC_motor));
+    BLDC_motor_ins = cvector_create(sizeof(BLDC_motor*));
 }
 
 void BLDC_motor_calc(BLDC_motor* obj)
@@ -31,6 +31,7 @@ void BLDC_motor_calc(BLDC_motor* obj)
     obj->pos = obj->motor_encoder->angle_rad;
     obj->w = obj->motor_encoder->w_rad;
 
+    //电机使能或失能
     if (obj->EN == 0) {
         BSP_GPIO_out(obj->config.en_port, 0);
         return;
@@ -56,15 +57,15 @@ void BLDC_motor_calc(BLDC_motor* obj)
         obj->output = obj->ref;
     }
 
+    //foc计算
+    obj->motor_foc->angle_dq = obj->pos * obj->config.pole_pair; //更新dq系电角度    
     if (obj->config.foc_cfg.foc_type == CURRENT_CLOSE){
         ;
     }
     else if (obj->config.foc_cfg.foc_type == VOLTAGE_OPEN){
         //限制一下最大输出，为最大电压的SQRT(3)/2倍
-        obj->output = min(obj->config.voltage_max * SQRT_3 / 2, obj->output) / obj->config.voltage_max;
+        obj->output = bound(-SQRT_3 /2, TorqueToVol(obj->output), SQRT_3 /2);
     }
-
-    obj->motor_foc->angle_dq = obj->pos * obj->config.pole_pair; //更新dq系电角度
     FOC_Calc(obj->motor_foc, obj->output);
 }
 
@@ -76,7 +77,7 @@ void BLDC_motor_cali(BLDC_motor* obj)
     ab.alpha = 0.5;
     ab.beta = 0;
     SVPWM(obj->motor_foc, ab);
-    delay_ms_sss(500);
+    delay_ms(500);
     obj->motor_foc->angle_ab = obj->motor_encoder->angle_rad * obj->config.pole_pair;//给恒定电压移动到初始电角度，即ab轴电角度 
     ab.alpha = 0;
     ab.beta = 0;

@@ -1,5 +1,22 @@
-#include "bsp_pwm.h"
+#include "stdint.h"
+#include "tim.h"
 
+//htim5 config:
+//PSC 240-1
+//ARR 2^32-1
+
+//htim1 config: 
+//PSC 2-1  
+//ARR 5000-1
+
+typedef struct BSP_PWM_Type_s
+{
+    uint8_t channel;
+    TIM_HandleTypeDef* htim;
+}BSP_PWM_Type;
+
+
+#define PWM_MAX_NUM 7
 BSP_PWM_Type PWM_Port[PWM_MAX_NUM];
 
 void BSP_PWM_Init()

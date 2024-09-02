@@ -1,6 +1,22 @@
-#include "bsp_uart.h"
 #include "string.h"
+#include "stdint.h"
+#include "usart.h"
 
+typedef void (uart_rx_func)(UART_HandleTypeDef* huart, uint8_t* rxbuffer, uint16_t len);
+
+#define MAX_BUF_LEN_R 512
+#define MAX_BUF_LEN_T 128
+#pragma pack(1)
+typedef struct BSP_UART_Type_s
+{
+    uint8_t txbuffer[MAX_BUF_LEN_T];
+    uint8_t rxbuffer[MAX_BUF_LEN_R];
+    uart_rx_func* user_func;
+    UART_HandleTypeDef* huart;
+}BSP_UART_Type;
+#pragma pack()
+
+#define MAX_PORT_NUM 2
 BSP_UART_Type uart_port[MAX_PORT_NUM] = {};
 
 /***------初始化------***/
@@ -59,7 +75,7 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef* huart)
 
 /***------设置callback函数------***/
 
-void BSP_UART_registerfunc(rx_handle_func* user_func, uint8_t port_index)
+void BSP_UART_registerfunc(uart_rx_func* user_func, uint8_t port_index)
 {
     uart_port[port_index].user_func = user_func;
 }

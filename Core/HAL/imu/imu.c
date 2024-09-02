@@ -1,6 +1,6 @@
 #include "imu.h"
 #include "cvector.h"
-#include "bsp_iic.h"
+#include "bsp.h"
 #include "myfunc.h"
 #include "inv_mpu.h"
 #include "inv_mpu_dmp_motion_driver.h"

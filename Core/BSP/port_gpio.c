@@ -1,14 +1,14 @@
-#include "bsp_gpio.h"
 #include "gpio.h"
+#include "main.h"
+#include  "stdint.h"
 
-#define GPIO_MAX_NUM 5
-
-typedef struct gpio_port_s
+typedef struct
 {
     GPIO_TypeDef *GPIOx;
     uint16_t GPIO_Pin
 }gpio_port;
 
+#define GPIO_MAX_NUM 5
 gpio_port ports[GPIO_MAX_NUM];
 
 void BSP_GPIO_out(uint8_t index, uint8_t output)

@@ -37,7 +37,6 @@ size_t cvector_length(cvector* cv) { return cv->cv_len; }
 //将数据指针压入数组
 void* cvector_pushback(cvector* cv, void* memb) {
     if (cv->cv_len >= cv->cv_tot_len) {
-        // void* pd_sav = cv->cv_pdata;
         // 以cv_tot_len为最小单位进行扩张，避免反复realloc
         cv->cv_tot_len <<= EXPANED_VAL;
         cv->cv_pdata = realloc(cv->cv_pdata, cv->cv_tot_len * cv->cv_size);
