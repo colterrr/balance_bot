@@ -28,6 +28,8 @@
 #include "instance.h"
 #include "imu.h"
 #include "encoder.h"
+#include "BLDC_motor.h"
+#include "watch_dog.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -70,6 +72,13 @@ const osThreadAttr_t PeripheralTask_attributes = {
   .stack_size = 128 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
+/* Definitions for WatchDogTask */
+osThreadId_t WatchDogTaskHandle;
+const osThreadAttr_t WatchDogTask_attributes = {
+  .name = "WatchDogTask",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -79,6 +88,7 @@ const osThreadAttr_t PeripheralTask_attributes = {
 void StartDefaultTask(void *argument);
 void StartInstanceTask(void *argument);
 void StartPeripheralTask(void *argument);
+void StartWatchDogTask(void *argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -117,6 +127,9 @@ void MX_FREERTOS_Init(void) {
 
   /* creation of PeripheralTask */
   PeripheralTaskHandle = osThreadNew(StartPeripheralTask, NULL, &PeripheralTask_attributes);
+
+  /* creation of WatchDogTask */
+  WatchDogTaskHandle = osThreadNew(StartWatchDogTask, NULL, &WatchDogTask_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -186,6 +199,27 @@ void StartPeripheralTask(void *argument)
     vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(1));
   }
   /* USER CODE END StartPeripheralTask */
+}
+
+/* USER CODE BEGIN Header_StartWatchDogTask */
+/**
+* @brief Function implementing the WatchDogTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartWatchDogTask */
+void StartWatchDogTask(void *argument)
+{
+  /* USER CODE BEGIN StartWatchDogTask */
+  TickType_t xLastWakeTime;
+  xLastWakeTime = xTaskGetTickCount();
+  /* Infinite loop */
+  for(;;)
+  {
+    WatchDog_Update();
+    vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(10));
+  }
+  /* USER CODE END StartWatchDogTask */
 }
 
 /* Private application code --------------------------------------------------*/

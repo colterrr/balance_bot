@@ -105,6 +105,7 @@ int main(void)
   MX_DMA_Init();
   MX_TIM1_Init();
   MX_FDCAN1_Init();
+  MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
   BSP_Init();
   HAL_my_Init();
@@ -202,11 +203,6 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart)
-{
-  HAL_UART_DMAStop(huart);
-  HAL_UART_Receive_DMA(huart, rxbuf, 100);
-}
 
 // void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
 // {

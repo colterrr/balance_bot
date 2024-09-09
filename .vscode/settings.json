@@ -31,6 +31,9 @@
         "port_iic.h": "c",
         "common.h": "c",
         "bldc_motor_can.h": "c",
-        "task.h": "c"
+        "task.h": "c",
+        "xbox_ctrler.h": "c",
+        "stm32h7xx_hal_conf.h": "c",
+        "watch_dog.h": "c"
     }
 }

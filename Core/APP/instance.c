@@ -3,6 +3,7 @@
 #include "encoder.h"
 #include "imu.h"
 #include "foc.h"
+#include "xbox_ctrler.h"
 
 #define DEBUG 1
 #if !DEBUG
@@ -42,6 +43,7 @@ typedef struct instance_s
 }instance;
 
 instance robot;
+extern xbox_ctrler_s xbox_ctrler;
 
 void Instance_init()
 {

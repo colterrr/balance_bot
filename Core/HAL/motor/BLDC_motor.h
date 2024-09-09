@@ -24,6 +24,7 @@ typedef struct
     uint8_t pole_pair;   //极对数
     float torque_cons; //转矩常数
     float voltage_max; //最大电压
+    float R_phase; //相电阻
 }BLDC_motor_config;
 
 

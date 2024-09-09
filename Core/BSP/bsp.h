@@ -32,6 +32,8 @@ void BSP_GPIO_Init();
 // ***
 // IIC
 // ***
+// SCL PB6
+// SDA PB7
 //software_IIC_Port结构体下表示传输状态的枚举变量
 typedef enum
 {
@@ -49,7 +51,11 @@ void Master_WriteReg(uint8_t port_index, uint8_t adr_reg, uint8_t len, uint8_t* 
 // ****
 // UART
 // ****
-typedef void (uart_rx_func)(UART_HandleTypeDef* huart, uint8_t* rxbuffer, uint16_t len);
+// UART1 TX PB14
+// UART2 RX PB15
+#define XBOX_UART_RORT 0
+
+typedef void (uart_rx_func)(uint8_t* pdata, uint16_t len);
 void BSP_UART_Init(void);
 void BSP_UART_send(uint8_t port_index, uint8_t* pdata, uint16_t len);
 void BSP_UART_IRQHandler(UART_HandleTypeDef* huart);

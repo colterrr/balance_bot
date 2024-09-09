@@ -190,7 +190,7 @@ SECTIONS
   .ARM.attributes 0 : { *(.ARM.attributes) }
 
   
-  .buffer_used (NOLOAD):
+  .buffer_used :
   {
     *(.buffer_used)
   } >RAM_D1

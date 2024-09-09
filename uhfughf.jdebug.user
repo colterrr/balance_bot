@@ -6,48 +6,32 @@ Breakpoint=D:/workfile/stm_project/balance_bot/Core/Src/main.c:153:1, State=BP_S
 Breakpoint=D:/workfile/stm_project/balance_bot/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_uart.c:2395:9, State=BP_STATE_DISABLED
 Breakpoint=D:/workfile/stm_project/balance_bot/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_uart.c:4179:3, State=BP_STATE_ON
 Breakpoint=D:/workfile/stm_project/balance_bot/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_dma.c:1559, State=BP_STATE_DISABLED
-GraphedExpression="((robot).motor1)->pos", Color=#e56a6f
-GraphedExpression="((robot).motor1)->w", Color=#35792b
-OpenDocument="bsp_iic.c", FilePath="D:/workfile/stm_project/balance_bot/Core/BSP/Src/bsp_iic.c", Line=98
+OpenDocument="stm32h7xx_hal_uart.c", FilePath="D:/workfile/stm_project/balance_bot/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_uart.c", Line=2454
+OpenDocument="port_uart.c", FilePath="D:/workfile/stm_project/balance_bot/Core/BSP/port_uart.c", Line=14
+OpenDocument="stm32h7xx_it.c", FilePath="D:/workfile/stm_project/balance_bot/Core/Src/stm32h7xx_it.c", Line=195
+OpenDocument="port_gpio.c", FilePath="D:/workfile/stm_project/balance_bot/Core/BSP/port_gpio.c", Line=0
 OpenDocument="main.c", FilePath="D:/workfile/stm_project/balance_bot/Core/Src/main.c", Line=62
-OpenDocument="encoder.h", FilePath="D:/workfile/stm_project/balance_bot/Core/HAL/encoder/encoder.h", Line=0
-OpenDocument="tasks.c", FilePath="D:/workfile/stm_project/balance_bot/Middlewares/Third_Party/FreeRTOS/Source/tasks.c", Line=3631
-OpenDocument="myfunc.c", FilePath="D:/workfile/stm_project/balance_bot/Core/HAL/lib/myfunc.c", Line=0
-OpenDocument="startup_stm32h750xx.s", FilePath="D:/workfile/stm_project/balance_bot/startup_stm32h750xx.s", Line=42
-OpenDocument="foc.c", FilePath="D:/workfile/stm_project/balance_bot/Core/HAL/lib/foc.c", Line=0
-OpenDocument="stm32h7xx_hal_gpio.c", FilePath="D:/workfile/stm_project/balance_bot/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_gpio.c", Line=337
-OpenDocument="stm32h7xx_it.c", FilePath="D:/workfile/stm_project/balance_bot/Core/Src/stm32h7xx_it.c", Line=78
-OpenDocument="freertos.c", FilePath="D:/workfile/stm_project/balance_bot/Core/Src/freertos.c", Line=121
-OpenDocument="imu.c", FilePath="D:/workfile/stm_project/balance_bot/Core/HAL/imu/imu.c", Line=45
-OpenDocument="instance.c", FilePath="D:/workfile/stm_project/balance_bot/Core/APP/instance.c", Line=0
-OpenDocument="BLDC_motor.c", FilePath="D:/workfile/stm_project/balance_bot/Core/HAL/motor/BLDC_motor.c", Line=28
-OpenDocument="stm32h7xx_hal.c", FilePath="D:/workfile/stm_project/balance_bot/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal.c", Line=118
-OpenDocument="stm32h7xx_hal_uart.c", FilePath="D:/workfile/stm_project/balance_bot/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_uart.c", Line=2224
-OpenDocument="bsp_gpio.c", FilePath="D:/workfile/stm_project/balance_bot/Core/BSP/Src/bsp_gpio.c", Line=0
-OpenDocument="stm32h7xx_hal_dma.h", FilePath="D:/workfile/stm_project/balance_bot/Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_dma.h", Line=127
-OpenDocument="encoder.c", FilePath="D:/workfile/stm_project/balance_bot/Core/HAL/encoder/encoder.c", Line=0
+OpenDocument="bsp.c", FilePath="D:/workfile/stm_project/balance_bot/Core/BSP/bsp.c", Line=0
+OpenDocument="port_pwm.c", FilePath="D:/workfile/stm_project/balance_bot/Core/BSP/port_pwm.c", Line=0
+OpenDocument="port_iic.c", FilePath="D:/workfile/stm_project/balance_bot/Core/BSP/port_iic.c", Line=314
+OpenDocument="cmsis_gcc.h", FilePath="D:/workfile/stm_project/balance_bot/Drivers/CMSIS/Include/cmsis_gcc.h", Line=1137
+OpenDocument="xbox_ctrler.c", FilePath="D:/workfile/stm_project/balance_bot/Core/HAL/xbox/xbox_ctrler.c", Line=0
 OpenToolbar="Debug", Floating=0, x=0, y=0
-OpenWindow="Watched Data 1", DockArea=RIGHT, x=0, y=0, w=810, h=1394, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
-OpenWindow="Data Sampling", DockArea=BOTTOM, x=0, y=0, w=4384, h=311, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, VisibleTab=0, UniformSampleSpacing=0
-OpenWindow="Timeline", DockArea=LEFT, x=0, y=0, w=1517, h=1394, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=1, DataPaneShown=1, PowerPaneShown=0, CodePaneShown=0, PinCursor="Cursor Movable", TimePerDiv="500 ms / Div", TimeStampFormat="Time", DataGraphDrawAsPoints=0, DataGraphLegendShown=1, DataGraphUniformSampleSpacing=0, DataGraphLegendPosition="250;81", DataGraphShowNamesAtCursor=0, PowerGraphDrawAsPoints=0, PowerGraphLegendShown=0, PowerGraphAvgFilterTime=Off, PowerGraphAvgFilterLen=Off, PowerGraphUniformSampleSpacing=0, PowerGraphLegendPosition="459;-69", CodeGraphLegendShown=0, CodeGraphLegendPosition="475;0"
+OpenWindow="Source Files", DockArea=LEFT, x=0, y=0, w=639, h=1173, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Watched Data 1", DockArea=RIGHT, x=0, y=0, w=1032, h=1386, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Terminal", DockArea=BOTTOM, x=0, y=0, w=271, h=311, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Data Sampling", DockArea=BOTTOM, x=1, y=0, w=2523, h=311, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, VisibleTab=0, UniformSampleSpacing=0
+OpenWindow="Timeline", DockArea=LEFT, x=0, y=1, w=639, h=212, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=1, DataPaneShown=1, PowerPaneShown=0, CodePaneShown=0, PinCursor="Cursor Movable", TimePerDiv="500 ms / Div", TimeStampFormat="Time", DataGraphDrawAsPoints=0, DataGraphLegendShown=1, DataGraphUniformSampleSpacing=0, DataGraphLegendPosition="250;40", DataGraphShowNamesAtCursor=0, PowerGraphDrawAsPoints=0, PowerGraphLegendShown=0, PowerGraphAvgFilterTime=Off, PowerGraphAvgFilterLen=Off, PowerGraphUniformSampleSpacing=0, PowerGraphLegendPosition="1290;-69", CodeGraphLegendShown=0, CodeGraphLegendPosition="1306;0"
 SmartViewPlugin="", Page="", Toolbar="Hidden", Window="SmartView 1"
-TableHeader="Data Sampling Table", SortCol="None", SortOrder="ASCENDING", VisibleCols=["Index";"Time";" ((robot).motor1)->pos";" ((robot).motor1)->w"], ColWidths=[100;100;100;100]
-TableHeader="Data Sampling Setup", SortCol="Expression", SortOrder="ASCENDING", VisibleCols=["Expression";"Type";"Value";"Min";"Max";"Average";"# Changes";"Min. Change";"Max. Change"], ColWidths=[212;100;114;124;114;124;110;134;3352]
+TableHeader="Data Sampling Table", SortCol="None", SortOrder="ASCENDING", VisibleCols=["Index";"Time"], ColWidths=[100;100]
+TableHeader="Data Sampling Setup", SortCol="Expression", SortOrder="ASCENDING", VisibleCols=["Expression";"Type";"Value";"Min";"Max";"Average";"# Changes";"Min. Change";"Max. Change"], ColWidths=[212;100;100;100;100;100;110;126;1575]
 TableHeader="Power Sampling", SortCol="None", SortOrder="ASCENDING", VisibleCols=["Index";"Time";"Ch 0"], ColWidths=[100;100;100]
-TableHeader="Watched Data 1", SortCol="Expression", SortOrder="ASCENDING", VisibleCols=["Expression";"Value";"Location";"Refresh"], ColWidths=[159;131;118;402]
+TableHeader="Watched Data 1", SortCol="Expression", SortOrder="ASCENDING", VisibleCols=["Expression";"Value";"Location";"Refresh"], ColWidths=[159;334;118;421]
 TableHeader="RegisterSelectionDialog", SortCol="None", SortOrder="ASCENDING", VisibleCols=[], ColWidths=[]
 TableHeader="TargetExceptionDialog", SortCol="Name", SortOrder="ASCENDING", VisibleCols=["Name";"Value";"Address";"Description"], ColWidths=[200;100;100;334]
+TableHeader="Source Files", SortCol="File", SortOrder="DESCENDING", VisibleCols=["File";"Status";"Size";"#Insts";"Path"], ColWidths=[204;100;100;100;886]
 WatchedExpression="time", RefreshRate=5, Window=Watched Data 1
 WatchedExpression="tick", RefreshRate=5, Window=Watched Data 1
-WatchedExpression="IIC_port", RefreshRate=5, Window=Watched Data 1
-WatchedExpression="ports", RefreshRate=5, Window=Watched Data 1
-WatchedExpression="robot", RefreshRate=5, Window=Watched Data 1
-WatchedExpression="htim1", RefreshRate=5, Window=Watched Data 1
-WatchedExpression="htim5", RefreshRate=5, Window=Watched Data 1
-WatchedExpression="htim6", RefreshRate=5, Window=Watched Data 1
-WatchedExpression="ans", RefreshRate=5, Window=Watched Data 1
-WatchedExpression="dq_ref", RefreshRate=5, Window=Watched Data 1
-WatchedExpression="output", RefreshRate=5, Window=Watched Data 1
-WatchedExpression="obj", RefreshRate=5, Window=Watched Data 1
-WatchedExpression="ans", RefreshRate=5, Window=Watched Data 1
-WatchedExpression="ref", Window=Watched Data 1
+WatchedExpression="huart1", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="uart_port", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="xbox_ctrler", RefreshRate=5, Window=Watched Data 1

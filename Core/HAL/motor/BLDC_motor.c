@@ -64,7 +64,7 @@ void BLDC_motor_calc(BLDC_motor* obj)
     }
     else if (obj->config.foc_cfg.foc_type == VOLTAGE_OPEN){
         //限制一下最大输出，为最大电压的SQRT(3)/2倍
-        obj->output = bound(-SQRT_3 /2, TorqueToVol(obj->output), SQRT_3 /2);
+        obj->output = bound(-SQRT_3 /2, obj->output * obj->config.R_phase / obj->config.torque_cons, SQRT_3 /2);
     }
     FOC_Calc(obj->motor_foc, obj->output);
 }
