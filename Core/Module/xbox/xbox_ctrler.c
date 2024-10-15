@@ -30,5 +30,5 @@ void xbox_recv_handle(uint8_t* pdata, uint16_t len)
 void xbox_init()
 {
     BSP_UART_registerfunc(xbox_recv_handle, XBOX_UART_RORT);
-    WatchDog_Create(50, xbox_lost);
+    xbox_ctrler.p_Wdog = WatchDog_Create(50, xbox_lost);
 }

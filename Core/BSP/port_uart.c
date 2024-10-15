@@ -13,7 +13,7 @@ typedef struct BSP_UART_Type_s
     uint8_t rxbuffer[MAX_BUF_LEN_R];
     uart_rx_func* user_func;
     UART_HandleTypeDef* huart;
-    uint16_t rx_Len;
+    uint16_t rxlen; //定长接收数据时的数据长度
 }BSP_UART_Type;
 #pragma pack()
 
@@ -25,42 +25,54 @@ __section(".buffer_used") BSP_UART_Type uart_port[MAX_PORT_NUM] = {};
 void BSP_UART_Init(void)
 {
     uart_port[0].huart = &huart1;
-    uart_port[0].rx_Len = 16;
     HAL_DMA_DeInit(huart1.hdmarx);
     HAL_DMA_Init(huart1.hdmarx);
-    HAL_UART_Receive_DMA(uart_port[0].huart, uart_port[0].rxbuffer, uart_port[0].rx_Len);
+    // __HAL_UART_ENABLE_IT(&huart1, UART_IT_IDLE);
+    // HAL_UART_Receive_DMA(uart_port[0].huart, uart_port[0].rxbuffer, uart_port[0].rx_Len);
+    HAL_UARTEx_ReceiveToIdle_DMA(uart_port[0].huart, uart_port[0].rxbuffer, MAX_BUF_LEN_R);
 }
 
 /***------接收------***/
 
 void BSP_UART_IRQHandler(UART_HandleTypeDef* huart)
 {
-    // if ( __HAL_UART_GET_FLAG(huart, UART_FLAG_IDLE) ) {
-    //     __HAL_UART_CLEAR_IDLEFLAG(huart);
-    //     HAL_UART_DMAStop(huart);
-    //     uint16_t len = MAX_BUF_LEN_R - __HAL_DMA_GET_COUNTER(huart->hdmarx);
+    if ( __HAL_UART_GET_IT(huart, UART_IT_IDLE) ) {
+        __HAL_UART_CLEAR_IT(huart, UART_IT_IDLE);
+        HAL_UART_DMAStop(huart);
+        uint16_t len = MAX_BUF_LEN_R - __HAL_DMA_GET_COUNTER(huart->hdmarx);
         
-    //     for (uint8_t i = 0; i < MAX_PORT_NUM; i++){
-    //         if (huart == uart_port[i].huart){
-    //             if (uart_port[i].user_func != NULL)
-    //                 (*(uart_port[i].user_func))(uart_port[i].rxbuffer, len);
-    //             HAL_UART_Receive_IT(huart, uart_port[i].rxbuffer, 16);
-    //         }
-    //     }
-    // }
-}
-
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart)
-{
-    for (uint8_t i = 0; i < MAX_PORT_NUM; i++) {
-        if (huart == uart_port[i].huart){
-            if (uart_port[i].user_func != NULL) {
-                (*(uart_port[i].user_func))(uart_port[i].rxbuffer, uart_port[i].rx_Len);                
+        for (uint8_t i = 0; i < MAX_PORT_NUM; i++) {
+            if (huart == uart_port[i].huart){
+                if (uart_port[i].user_func != NULL)
+                    (*(uart_port[i].user_func))(uart_port[i].rxbuffer, len);
+                HAL_UART_Receive_IT(huart, uart_port[i].rxbuffer, 16);
             }
-            HAL_UART_Receive_DMA(huart, uart_port[i].rxbuffer, uart_port[i].rx_Len);
         }
     }
 }
+
+void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef* huart, uint16_t Size)
+{
+    for (uint8_t i = 0; i < MAX_PORT_NUM; i++) {
+        if (huart == uart_port[i].huart) {
+            if (uart_port[i].user_func != NULL)
+                (*(uart_port[i].user_func))(uart_port[i].rxbuffer, Size);
+            HAL_UARTEx_ReceiveToIdle_DMA(uart_port[0].huart, uart_port[0].rxbuffer, MAX_BUF_LEN_R);
+        }
+    }
+}
+
+// void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart)
+// {
+//     for (uint8_t i = 0; i < MAX_PORT_NUM; i++) {
+//         if (huart == uart_port[i].huart){
+//             if (uart_port[i].user_func != NULL) {
+//                 (*(uart_port[i].user_func))(uart_port[i].rxbuffer, uart_port[i].rx_Len);                
+//             }
+//             HAL_UART_Receive_DMA(huart, uart_port[i].rxbuffer, uart_port[i].rx_Len);
+//         }
+//     }
+// }
 
 /***------发送------***/
 

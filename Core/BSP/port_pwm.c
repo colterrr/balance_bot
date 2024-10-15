@@ -19,6 +19,17 @@ typedef struct BSP_PWM_Type_s
 #define PWM_MAX_NUM 7
 BSP_PWM_Type PWM_Port[PWM_MAX_NUM];
 
+void BSP_PWM_Start(uint8_t index)
+{
+    HAL_TIM_PWM_Start(PWM_Port[index].htim, PWM_Port[index].channel);
+    HAL_TIMEx_PWMN_Start(PWM_Port[index].htim, PWM_Port[index].channel);
+}
+void BSP_PWM_Stop(uint8_t index)
+{
+    HAL_TIM_PWM_Stop(PWM_Port[index].htim, PWM_Port[index].channel);
+    HAL_TIMEx_PWMN_Stop(PWM_Port[index].htim, PWM_Port[index].channel);
+}
+
 void BSP_PWM_Init()
 {
     PWM_Port[0].htim = &htim1;
@@ -45,15 +56,4 @@ void BSP_PWM_SetARR(uint8_t index, uint16_t ARR_val)
 void BSP_PWM_SetCCR(uint8_t index, uint16_t CCR_val)
 {
     __HAL_TIM_SetCompare(PWM_Port[index].htim, PWM_Port[index].channel, CCR_val);
-}
-
-void BSP_PWM_Start(uint8_t index)
-{
-    HAL_TIM_PWM_Start(PWM_Port[index].htim, PWM_Port[index].channel);
-    HAL_TIMEx_PWMN_Start(PWM_Port[index].htim, PWM_Port[index].channel);
-}
-void BSP_PWM_Stop(uint8_t index)
-{
-    HAL_TIM_PWM_Stop(PWM_Port[index].htim, PWM_Port[index].channel);
-    HAL_TIMEx_PWMN_Stop(PWM_Port[index].htim, PWM_Port[index].channel);
 }

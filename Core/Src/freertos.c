@@ -28,7 +28,7 @@
 #include "instance.h"
 #include "imu.h"
 #include "encoder.h"
-#include "BLDC_motor.h"
+#include "BLDC_motor_can.h"
 #include "watch_dog.h"
 /* USER CODE END Includes */
 
@@ -69,7 +69,7 @@ const osThreadAttr_t InstanceTask_attributes = {
 osThreadId_t PeripheralTaskHandle;
 const osThreadAttr_t PeripheralTask_attributes = {
   .name = "PeripheralTask",
-  .stack_size = 128 * 4,
+  .stack_size = 512 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
 /* Definitions for WatchDogTask */
@@ -169,11 +169,13 @@ void StartDefaultTask(void *argument)
 void StartInstanceTask(void *argument)
 {
   /* USER CODE BEGIN StartInstanceTask */
+  TickType_t xLastWakeTime;
+  xLastWakeTime = xTaskGetTickCount();
   /* Infinite loop */
   for(;;)
   {
     Instance_Update();
-    osDelay(1);
+    vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(1));
   }
   /* USER CODE END StartInstanceTask */
 }
@@ -191,12 +193,13 @@ void StartPeripheralTask(void *argument)
   TickType_t xLastWakeTime;
   xLastWakeTime = xTaskGetTickCount();
   /* Infinite loop */
+  imu_dmp_init();
   for(;;)
   {
-    //IMU_Update();
+    IMU_Update();
     Encoder_Update();
-    BLDC_motor_Update();
-    vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(1));
+    //BLDC_MotorCan_Send();
+    vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(10));
   }
   /* USER CODE END StartPeripheralTask */
 }

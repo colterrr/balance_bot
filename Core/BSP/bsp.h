@@ -15,6 +15,8 @@ void BSP_PWM_Stop(uint8_t index);
 // *****
 // FDCAN
 // *****
+// CANTX PA12
+// CANRX PA11
 typedef void can_rx_func(uint16_t id, uint8_t* pdata, uint16_t len);
 void BSP_FDCAN_Init();
 void BSP_FDCAN_RegisterCallback(uint8_t can_module_index, can_rx_func* callback);

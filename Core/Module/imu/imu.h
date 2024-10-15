@@ -46,6 +46,7 @@ typedef struct imu_atk_s
 void IMU_Update(void);
 void IMU_Init();
 imu_atk* imu_Create(void);
+void imu_dmp_init();
 
 //这两句会被inv_mpu调用，别删
 int atk_ms6050_write(uint8_t addr, uint8_t reg, uint8_t len, uint8_t* pdata);

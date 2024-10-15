@@ -1,6 +1,8 @@
 #ifndef _PID_H_
 #define _PID_H_
 
+#include "stdint.h"
+
 typedef enum pid_depth_e
 {
     PID_SINGLE = 0,
@@ -16,6 +18,8 @@ typedef struct pid_config_s
     float* fdb_p;
     float err_max;
     float output_max;
+
+    uint8_t reverse_flag; //输出反转设置 0正常 1输出反转
 }pid_config;
 
 

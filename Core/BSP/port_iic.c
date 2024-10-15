@@ -12,6 +12,11 @@
 // t_HD-DAT = t_SU-DAT = t_HD-STA = t_SU-STA = t_HD-STO = t_SU-STO = 2us
 // t_R_SDA, t_F_SDA, t_R_SCL, t_F_SCL 忽略不计
 
+#define GPIOx_CL IIC_port[index].IOx_CL
+#define GPIOx_DA IIC_port[index].IOx_DA
+#define GPIO_Pin_CL IIC_port[index].Pin_CL
+#define GPIO_Pin_DA IIC_port[index].Pin_DA
+
 #define H_SCL HAL_GPIO_WritePin(GPIOx_CL,GPIO_Pin_CL,GPIO_PIN_SET)
 #define L_SCL HAL_GPIO_WritePin(GPIOx_CL,GPIO_Pin_CL,GPIO_PIN_RESET)
 
@@ -45,36 +50,31 @@ typedef struct
     uint16_t Pin_DA;
 }software_IIC_Port;
 
-static GPIO_TypeDef* GPIOx_CL;
-static GPIO_TypeDef* GPIOx_DA;
-static uint16_t GPIO_Pin_CL;
-static uint16_t GPIO_Pin_DA;
-
 #define IIC_MAX_NUM 2
-software_IIC_Port IIC_port[IIC_MAX_NUM];
+static software_IIC_Port IIC_port[IIC_MAX_NUM];
 
 /***SDA输出输入模式改变***/
 
-static void SDA_Set_Output()
+static void SDA_Set_Output(uint8_t index)
 {
     GPIO_InitTypeDef config ={0};
     config.Mode = GPIO_MODE_OUTPUT_PP;
-    config.Pin = GPIO_Pin_DA;
+    config.Pin = IIC_port[index].Pin_DA;
     config.Pull = GPIO_NOPULL;
     config.Speed = GPIO_SPEED_FREQ_HIGH;
-    HAL_GPIO_DeInit(GPIOx_DA, GPIO_Pin_DA);
-    HAL_GPIO_Init(GPIOx_DA, &config);
+    HAL_GPIO_DeInit(IIC_port[index].IOx_DA, IIC_port[index].Pin_DA);
+    HAL_GPIO_Init(IIC_port[index].IOx_DA, &config);
 }
 
-static void SDA_Set_Input()
+static void SDA_Set_Input(uint8_t index)
 {
     GPIO_InitTypeDef config = {0};
     config.Mode = GPIO_MODE_INPUT;
-    config.Pin = GPIO_Pin_DA;
+    config.Pin = IIC_port[index].Pin_DA;
     config.Pull = GPIO_NOPULL;
     config.Speed = GPIO_SPEED_FREQ_HIGH;
-    HAL_GPIO_DeInit(GPIOx_DA, GPIO_Pin_DA);
-    HAL_GPIO_Init(GPIOx_DA, &config);
+    HAL_GPIO_DeInit(IIC_port[index].IOx_DA, IIC_port[index].Pin_DA);
+    HAL_GPIO_Init(IIC_port[index].IOx_DA, &config);
 }
 
 /***-------------------***/
@@ -82,9 +82,9 @@ static void SDA_Set_Input()
 
 /***开始信号S和结束信号P***/
 
-static void Master_Start()
+static void Master_Start(uint8_t index)
 {
-    SDA_Set_Output();
+    SDA_Set_Output(index);
     H_SCL;
     H_SDA;
     delay_us(2);//t_SU-STA 2
@@ -93,9 +93,9 @@ static void Master_Start()
     L_SCL; //拉低SCL，利于SDA电平变化
 }
 
-static void Master_Stop()
+static void Master_Stop(uint8_t index)
 {
-    SDA_Set_Output();
+    SDA_Set_Output(index);
     L_SCL;
     L_SDA;
     delay_us(4);//t_LOW 4
@@ -109,9 +109,9 @@ static void Master_Stop()
 
 /***接收应答和发送应答***/
 
-static void Master_N_ACK(ACK_value sig)
+static void Master_N_ACK(uint8_t index, ACK_value sig)
 {
-    SDA_Set_Output();
+    SDA_Set_Output(index);
     L_SCL;
     delay_us(2);
     if(sig)
@@ -124,10 +124,10 @@ static void Master_N_ACK(ACK_value sig)
     L_SCL;
 }
 
-static uint8_t Master_wait_ACK()
+static uint8_t Master_wait_ACK(uint8_t index)
 {
     L_SCL;
-    SDA_Set_Input();
+    SDA_Set_Input(index);
     uint16_t outtime = 10000;
     delay_us(4);
     H_SCL;
@@ -136,7 +136,7 @@ static uint8_t Master_wait_ACK()
     {
         if(--outtime)
         {
-            Master_Stop();
+            Master_Stop(index);
             return 0xff; //表示err
         }
     }
@@ -149,9 +149,9 @@ static uint8_t Master_wait_ACK()
 
 /***发送和接收一个字节数据***/
 
-static void Master_Transmit_Byte(uint8_t Byte)
+static void Master_Transmit_Byte(uint8_t index, uint8_t Byte)
 {
-    SDA_Set_Output();
+    SDA_Set_Output(index);
     uint8_t i = 8;
     L_SCL;
     //发最高位，每次左移一位替换最高位
@@ -167,9 +167,9 @@ static void Master_Transmit_Byte(uint8_t Byte)
     }
 }
 
-static uint8_t Master_Receive_Byte()
+static uint8_t Master_Receive_Byte(uint8_t index)
 {
-    SDA_Set_Input();
+    SDA_Set_Input(index);
     uint8_t i = 0;
     uint8_t Byte = 0;
     while(i++ < 8){
@@ -193,35 +193,30 @@ static uint8_t Master_Receive_Byte()
 void Master_Transmit(uint8_t port_index, uint8_t* pdata, uint16_t len)
 {
     software_IIC_Port* port = IIC_port + port_index;
-    
-    GPIOx_CL = port->IOx_CL;
-    GPIO_Pin_CL = port->Pin_CL;
-    GPIOx_DA = port->IOx_DA;
-    GPIO_Pin_DA = port->Pin_DA;
     uint8_t ADDR = port->slave_ADDR;
 
     uint8_t i = 0;
 
-    Master_Start();
-    Master_Transmit_Byte(ADDR << 1);//从机地址 + W
-    if(Master_wait_ACK() == 0xff){
+    Master_Start(port_index);
+    Master_Transmit_Byte(port_index, ADDR << 1);//从机地址 + W
+    if(Master_wait_ACK(port_index) == 0xff){
         //收到NACK
-        Master_Stop();
+        Master_Stop(port_index);
         port->status = IIC_ERR;
         return;
     }
 
     for(i = 0; i < len; i++){
-        Master_Transmit_Byte(pdata[i]);
-        if(Master_wait_ACK() == 0xff){
+        Master_Transmit_Byte(port_index, pdata[i]);
+        if(Master_wait_ACK(port_index) == 0xff){
             //收到NACK
-            Master_Stop();
+            Master_Stop(port_index);
             port->status = IIC_ERR;
             return;
         }
     }
 
-    Master_Stop();
+    Master_Stop(port_index);
     port->status = IIC_OK;
     return;
 }
@@ -229,29 +224,24 @@ void Master_Transmit(uint8_t port_index, uint8_t* pdata, uint16_t len)
 void Master_Receive(uint8_t port_index, uint8_t* rxbuf, uint16_t len)
 {
     software_IIC_Port* port = IIC_port + port_index;
-
-    GPIOx_CL = port->IOx_CL;
-    GPIO_Pin_CL = port->Pin_CL;
-    GPIOx_DA = port->IOx_DA;
-    GPIO_Pin_DA = port->Pin_DA;
     uint8_t ADDR = port->slave_ADDR;
 
     uint8_t i = 0;
 
-    Master_Start();
-    Master_Transmit_Byte((ADDR << 1 )| 1);//从机地址 + R
-    if (Master_wait_ACK() == 0xff) {
+    Master_Start(port_index);
+    Master_Transmit_Byte(port_index, (ADDR << 1 )| 1);//从机地址 + R
+    if (Master_wait_ACK(port_index) == 0xff) {
         //收到从机的NACK，停止接收
-        Master_Stop();
+        Master_Stop(port_index);
         port->status = IIC_ERR;
         return;
     } 
     for(i = 0; i < len; i++){
-        rxbuf[i] = Master_Receive_Byte();
-        Master_N_ACK(!(len - i - 1)); //根据是否收完足够的数据来发送ACK或NACK
+        rxbuf[i] = Master_Receive_Byte(port_index);
+        Master_N_ACK(port_index, !(len - i - 1)); //根据是否收完足够的数据来发送ACK或NACK
     }
 
-    Master_Stop();
+    Master_Stop(port_index);
     port->status = IIC_OK;
     return;
 }
@@ -259,48 +249,43 @@ void Master_Receive(uint8_t port_index, uint8_t* rxbuf, uint16_t len)
 void Master_Complex(uint8_t port_index, uint8_t* pdata, uint16_t len_t, uint8_t* rxbuf, uint16_t len_r)
 {
     software_IIC_Port* port = IIC_port + port_index;
-
-    GPIOx_CL = port->IOx_CL;
-    GPIO_Pin_CL = port->Pin_CL;
-    GPIOx_DA = port->IOx_DA;
-    GPIO_Pin_DA = port->Pin_DA;
     uint8_t ADDR = port->slave_ADDR;
 
     uint8_t i = 0;
 
-    Master_Start();
-    Master_Transmit_Byte(ADDR << 1);//从机地址 + W
-    if(Master_wait_ACK() == 0xff){
+    Master_Start(port_index);
+    Master_Transmit_Byte(port_index, ADDR << 1);//从机地址 + W
+    if(Master_wait_ACK(port_index) == 0xff){
         //收到从机的NACK，停止发送
-        Master_Stop();
+        Master_Stop(port_index);
         port->status = IIC_ERR;
         return;
     }
    for(i = 0; i < len_t; i++){
-        Master_Transmit_Byte(pdata[i]);
-        if(Master_wait_ACK() == 0xff){
+        Master_Transmit_Byte(port_index, pdata[i]);
+        if(Master_wait_ACK(port_index) == 0xff){
             //收到从机的NACK，停止发送
-            Master_Stop();
+            Master_Stop(port_index);
             port->status = IIC_ERR;
             return;
         }
     }
 
-    Master_Start();//复合格式二次起始信号
+    Master_Start(port_index);//复合格式二次起始信号
     //delay_ms(1);   //?????为什么要等一会?????
-    Master_Transmit_Byte((ADDR << 1 )| 1);//从机地址 + R
-    if (Master_wait_ACK() == 0xff) {
+    Master_Transmit_Byte(port_index, (ADDR << 1 )| 1);//从机地址 + R
+    if (Master_wait_ACK(port_index) == 0xff) {
         //收到从机的NACK，停止接收
-        Master_Stop();
+        Master_Stop(port_index);
         port->status = IIC_ERR;
         return;
     } 
     for(i = 0; i < len_r; i++){
-        rxbuf[i] = Master_Receive_Byte();
-        Master_N_ACK(!(len_r - i - 1)); //根据是否收完足够的数据来发送ACK或NACK
+        rxbuf[i] = Master_Receive_Byte(port_index);
+        Master_N_ACK(port_index, !(len_r - i - 1)); //根据是否收完足够的数据来发送ACK或NACK
     }
 
-    Master_Stop();
+    Master_Stop(port_index);
     port->status = IIC_OK;
     return;
 }
@@ -328,39 +313,34 @@ void Master_ReadReg_16bit(uint8_t port_index, uint8_t adr_reg, uint16_t* pdata)
 void Master_WriteReg(uint8_t port_index, uint8_t adr_reg, uint8_t len, uint8_t* pdata)
 {
     software_IIC_Port* port = IIC_port + port_index;
-
-    GPIOx_CL = port->IOx_CL;
-    GPIO_Pin_CL = port->Pin_CL;
-    GPIOx_DA = port->IOx_DA;
-    GPIO_Pin_DA = port->Pin_DA;
     uint8_t ADDR = port->slave_ADDR;
 
     uint8_t i = 0;
-    Master_Start();
-    Master_Transmit_Byte(ADDR << 1);//从机地址 + W
-    if(Master_wait_ACK() == 0xff){
+    Master_Start(port_index);
+    Master_Transmit_Byte(port_index, ADDR << 1);//从机地址 + W
+    if(Master_wait_ACK(port_index) == 0xff){
         //收到从机的NACK，停止发送
-        Master_Stop();
+        Master_Stop(port_index);
         port->status = IIC_ERR;
         return;
     }
-    Master_Transmit_Byte(adr_reg);
-    if(Master_wait_ACK() == 0xff){
+    Master_Transmit_Byte(port_index, adr_reg);
+    if(Master_wait_ACK(port_index) == 0xff){
         //收到从机的NACK，停止发送
-        Master_Stop();
+        Master_Stop(port_index);
         port->status = IIC_ERR;
         return;
     }
    for(i = 0; i < len; i++){
-        Master_Transmit_Byte(pdata[i]);
-        if(Master_wait_ACK() == 0xff){
+        Master_Transmit_Byte(port_index, pdata[i]);
+        if(Master_wait_ACK(port_index) == 0xff){
             //收到从机的NACK，停止发送
-            Master_Stop();
+            Master_Stop(port_index);
             port->status = IIC_ERR;
             return;
         }
     }
-    Master_Stop();
+    Master_Stop(port_index);
     port->status = IIC_OK;
     return;
 }

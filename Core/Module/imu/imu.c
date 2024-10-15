@@ -89,9 +89,14 @@ void IMU_Init()
     // Master_WriteReg_Byte(IMU_IIC_PORT, SENSOR_CONFIG_REG, 0x04);
     // Master_WriteReg_Byte(IMU_IIC_PORT, PWR_CTRL_REG_2, 0x00);
     // Master_WriteReg_Byte(IMU_IIC_PORT, PWR_CTRL_REG_1, 0x01);
-    uint8_t sta = atk_ms6050_dmp_init();
+}
+
+//内部含vtaskdelay，要在调度器开启后使用
+void imu_dmp_init()
+{
+    atk_ms6050_dmp_init();
     mpu_set_accel_fsr(ACCE_FSR);
-    mpu_set_gyro_fsr(GYRO_FSR);
+    mpu_set_gyro_fsr(GYRO_FSR);    
 }
 
 imu_atk* imu_Create(void)

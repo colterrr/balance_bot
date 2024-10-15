@@ -47,6 +47,7 @@ BLDC_motor_can* BLDC_MotorCan_Create(BLDC_motor_can_config config)
     return obj;
 }
 
+static uint8_t send_data[5];
 /**
  * @brief 电机输出期望值发送
  */
@@ -54,10 +55,9 @@ void BLDC_MotorCan_Send()
 {
     for (uint8_t i = 0;i < BLDC_MotorCan_ins->cv_len; i++){
         BLDC_motor_can* obj = *(BLDC_motor_can**)cvector_val_at(BLDC_MotorCan_ins, i);
-        static uint8_t send_data[5];
         /*
         发送电机的控制报文：
-        模式 1byte 0力矩 1速度 2位置
+        模式 1byte 0停止 1力矩 2速度 3位置 
         目标值 4byte (float_32t)
         */        
         send_data[0] = obj->mode;

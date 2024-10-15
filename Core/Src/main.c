@@ -29,7 +29,7 @@
 /* USER CODE BEGIN Includes */
 #include "myfunc.h"
 #include "bsp.h"
-#include "hal.h"
+#include "module.h"
 #include "instance.h"
 #include "stm32h7xx_hal_usart.h"
 
@@ -55,10 +55,6 @@
 uint32_t tick = 0;
 uint32_t time = 0;
 
-__section(".buffer_used") uint8_t rxbuf[100] = {};
-__section(".buffer_used") uint8_t txbuf[5] = {};
-
-HAL_StatusTypeDef aaa;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -108,7 +104,7 @@ int main(void)
   MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
   BSP_Init();
-  HAL_my_Init();
+  Module_Init();
   Instance_init();
 // HAL_DMA_DeInit(huart1.hdmarx);
 // HAL_DMA_DeInit(huart1.hdmatx);
@@ -136,10 +132,6 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    //memcpy(txbuf, "12", 2);
-    //aaa = HAL_UART_Transmit_DMA(&huart1, txbuf, 2);
-    //delay_ms(600);
-    delay_ms(1);
   }
   /* USER CODE END 3 */
 }

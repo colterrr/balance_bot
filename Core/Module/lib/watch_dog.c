@@ -16,6 +16,7 @@ WatchDog_s* WatchDog_Create(uint16_t timeout, watchD_callback f_callback)
     obj->tick = 0;
     obj->f_callback = f_callback;
     cvector_pushback(WatchDog_instance, &obj);
+    return obj;
 }
 
 void WatchDog_feed(WatchDog_s* obj)
@@ -31,6 +32,7 @@ void WatchDog_Update()
         if (obj->tick > obj->timeout) {
             if (obj->f_callback != NULL) {
                 obj->f_callback;
+                obj->tick = obj->timeout;
             }
         }
     }

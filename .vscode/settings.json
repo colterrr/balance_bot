@@ -34,6 +34,12 @@
         "task.h": "c",
         "xbox_ctrler.h": "c",
         "stm32h7xx_hal_conf.h": "c",
-        "watch_dog.h": "c"
+        "watch_dog.h": "c",
+        "freertos.h": "c",
+        "pos_calc.h": "c",
+        "rt_nonfinite.h": "c",
+        "rt_defines.h": "c",
+        "stddef.h": "c",
+        "rtwtypes.h": "c"
     }
 }

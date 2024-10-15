@@ -18,10 +18,10 @@ typedef struct
 typedef struct
 {
     BLDC_motor_can_config config;
-    uint8_t EN;
-    Control_mode mode;
 
+    Control_mode mode;
     float ref; //期望值
+    
     float pos;
     float w;
 
@@ -31,5 +31,6 @@ typedef struct
 void BLDC_MotorCan_Init();
 BLDC_motor_can* BLDC_MotorCan_Create(BLDC_motor_can_config config);
 void BLDC_MotorCan_Update(uint16_t id, uint8_t* pdata, uint16_t len);
+void BLDC_MotorCan_Send();
 
 #endif
