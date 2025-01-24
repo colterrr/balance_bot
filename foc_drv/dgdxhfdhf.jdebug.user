@@ -1,0 +1,31 @@
+
+
+OpenDocument="startup_stm32f103xb.s", FilePath="D:/workfile/stm_project/foc_drv/startup_stm32f103xb.s", Line=45
+OpenDocument="stm32f1xx_it.c", FilePath="D:/workfile/stm_project/foc_drv/Core/Src/stm32f1xx_it.c", Line=74
+OpenDocument="bsp_can.c", FilePath="D:/workfile/stm_project/foc_drv/Core/BSP/bsp_can.c", Line=0
+OpenDocument="main.c", FilePath="D:/workfile/stm_project/foc_drv/Core/Src/main.c", Line=49
+OpenDocument="tasks.c", FilePath="D:/workfile/stm_project/foc_drv/Middlewares/Third_Party/FreeRTOS/Source/tasks.c", Line=3242
+OpenDocument="myfunc.c", FilePath="D:/workfile/stm_project/foc_drv/Core/HAL/lib/myfunc.c", Line=0
+OpenToolbar="Debug", Floating=0, x=0, y=0
+OpenWindow="Source Files", DockArea=LEFT, x=0, y=0, w=661, h=682, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Disassembly", DockArea=RIGHT, x=0, y=0, w=1968, h=307, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Watched Data 1", DockArea=RIGHT, x=0, y=1, w=1968, h=1084, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Terminal", DockArea=BOTTOM, x=0, y=0, w=2708, h=314, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Data Sampling", DockArea=BOTTOM, x=1, y=0, w=291, h=314, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, VisibleTab=0, UniformSampleSpacing=0
+OpenWindow="Timeline", DockArea=LEFT, x=0, y=1, w=661, h=709, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, DataPaneShown=1, PowerPaneShown=0, CodePaneShown=0, PinCursor="Cursor Movable", TimePerDiv="5 s", TimeStampFormat="Time", DataGraphDrawAsPoints=0, DataGraphLegendShown=1, DataGraphUniformSampleSpacing=0, DataGraphLegendPosition="302;0", DataGraphShowNamesAtCursor=0, PowerGraphDrawAsPoints=0, PowerGraphLegendShown=0, PowerGraphAvgFilterTime=Off, PowerGraphAvgFilterLen=Off, PowerGraphUniformSampleSpacing=0, PowerGraphLegendPosition="961;-69", CodeGraphLegendShown=0, CodeGraphLegendPosition="977;0"
+SmartViewPlugin="", Page="", Toolbar="Hidden", Window="SmartView 1"
+TableHeader="Source Files", SortCol="File", SortOrder="ASCENDING", VisibleCols=["File";"Status";"Size";"#Insts";"Path"], ColWidths=[204;100;100;100;846]
+TableHeader="Data Sampling Table", SortCol="None", SortOrder="ASCENDING", VisibleCols=["Index";"Time"], ColWidths=[100;100]
+TableHeader="Data Sampling Setup", SortCol="Expression", SortOrder="ASCENDING", VisibleCols=["Expression";"Type";"Value";"Min";"Max";"Average";"# Changes";"Min. Change";"Max. Change"], ColWidths=[551;100;100;100;100;100;110;126;126]
+TableHeader="Power Sampling", SortCol="None", SortOrder="ASCENDING", VisibleCols=["Index";"Time";"Ch 0"], ColWidths=[100;100;100]
+TableHeader="Watched Data 1", SortCol="Expression", SortOrder="ASCENDING", VisibleCols=["Expression";"Value";"Location";"Refresh"], ColWidths=[159;334;491;984]
+TableHeader="RegisterSelectionDialog", SortCol="None", SortOrder="ASCENDING", VisibleCols=[], ColWidths=[]
+TableHeader="TargetExceptionDialog", SortCol="Name", SortOrder="ASCENDING", VisibleCols=["Name";"Value";"Address";"Description"], ColWidths=[200;100;100;960]
+WatchedExpression="ins", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="IIC_port", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="htim1", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="ports", Window=Watched Data 1
+WatchedExpression="hcan", RefreshRate=5, Window=Watched Data 1
+WatchedExpression="can_rxbuf", Window=Watched Data 1
+WatchedExpression="rxheader", Window=Watched Data 1
+WatchedExpression="len", Window=Watched Data 1
