@@ -3,7 +3,7 @@
 #include "stdlib.h"
 #include "string.h"
 #include "cvector.h"
-#include "myfunc.h"
+#include "common.h"
 #include "bsp.h"
 
 cvector* BLDC_motor_ins;

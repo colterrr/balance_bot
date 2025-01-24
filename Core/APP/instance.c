@@ -1,5 +1,5 @@
 #include "bsp.h"
-#include "myfunc.h"
+#include "common.h"
 #include "encoder.h"
 #include "imu.h"
 #include "foc.h"
@@ -44,6 +44,8 @@ typedef struct instance_s
     double ref_x;
     double ref_v;
     double ref_yaw;
+
+    pid leg_co
     #endif 
 
     #if DEBUG
@@ -55,9 +57,29 @@ typedef struct instance_s
     float b;
     #endif
 }instance;
-
 instance robot;
-extern xbox_ctrler_s xbox_ctrler;
+
+extern xbox_ctrler_s my_xbox;
+
+inline static void AllMotor_Stop()
+{
+    robot.motor_l_wheel->mode = MOTOR_STOP;
+    robot.motor_lb->mode = MOTOR_STOP;
+    robot.motor_lf->mode = MOTOR_STOP;
+    robot.motor_r_wheel->mode = MOTOR_STOP;
+    robot.motor_rb->mode = MOTOR_STOP;
+    robot.motor_rf->mode = MOTOR_STOP;
+}
+
+inline static void AllMotor_Torque()
+{
+    robot.motor_l_wheel->mode = TORQUE_MODE;
+    robot.motor_lb->mode = TORQUE_MODE;
+    robot.motor_lf->mode = TORQUE_MODE;
+    robot.motor_r_wheel->mode = TORQUE_MODE;
+    robot.motor_rb->mode = TORQUE_MODE;
+    robot.motor_rf->mode = TORQUE_MODE;
+}
 
 void Instance_init()
 {
@@ -95,18 +117,24 @@ void Instance_init()
 
     BLDC_motor_can_config config_tem;
     //左侧电机
-    config_tem.id = 0x400;
+    config_tem.trans_id = 0x403;
+    config_tem.rece_id = 0x303;
     robot.motor_l_wheel = BLDC_MotorCan_Create(config_tem);
-    config_tem.id = 0x401;
+    config_tem.trans_id = 0x404;
+    config_tem.rece_id = 0x304;
     robot.motor_lf = BLDC_MotorCan_Create(config_tem);
-    config_tem.id = 0x402;
+    config_tem.trans_id = 0x405;
+    config_tem.rece_id = 0x305;
     robot.motor_lb = BLDC_MotorCan_Create(config_tem);
     //右侧电机
-    config_tem.id = 0x403;
+    config_tem.trans_id = 0x400;
+    config_tem.rece_id = 0x300;
     robot.motor_r_wheel = BLDC_MotorCan_Create(config_tem);
-    config_tem.id = 0x404;
+    config_tem.trans_id = 0x401;
+    config_tem.rece_id = 0x301;
     robot.motor_rf = BLDC_MotorCan_Create(config_tem);
-    config_tem.id = 0x405;
+    config_tem.trans_id = 0x402;
+    config_tem.rece_id = 0x302;
     robot.motor_rb = BLDC_MotorCan_Create(config_tem);
     #endif
 
@@ -115,15 +143,15 @@ void Instance_init()
 void Instance_Update()
 {
     #if DEBUG
-    if (xbox_ctrler.commu_on_flag && xbox_ctrler.online_flag) ;
+    if (my_xbox.commu_on_flag && my_xbox.online_flag) ;
     else return;
 
     if (robot.test_motor->init_flag == 0)return;
     if (robot.test_motor->EN == 1 ){
         BSP_GPIO_out(MOTOR1_PORT, 1);
-        if (xbox_ctrler.xbox_msg.right_y > 31000 && xbox_ctrler.xbox_msg.right_y < 35000)
+        if (my_xbox.xbox_msg.right_y > 31000 && my_xbox.xbox_msg.right_y < 35000)
             robot.test_motor->ref = 0;
-        else robot.test_motor->ref = (float)(xbox_ctrler.xbox_msg.right_y - 32768) / 32768 * 100;
+        else robot.test_motor->ref = (float)(my_xbox.xbox_msg.right_y - 32768) / 32768 * 100;
 
         // vector_ab ab;
         // for (uint8_t i = 0; i < 28; i++){
@@ -142,37 +170,72 @@ void Instance_Update()
     #endif
 
     #if !DEBUG
+    robot.run_mode = ROBOT_RUN;
     //各通讯监测
-    // if (xbox_ctrler.commu_on_flag && xbox_ctrler.online_flag) ;
-    // else robot.run_mode = ROBOT_STOP;
+    uint8_t errNum = 0;
+    //xbox遥控器通信
+    errNum += !my_xbox.commu_on_flag + !my_xbox.online_flag;
+    //imu通信
+    errNum += robot.imu->sta;
+    //电机通讯
+    errNum +=   //robot.motor_l_wheel->commu_sta + \
+                //robot.motor_lb->commu_sta + 
+                robot.motor_lf->commu_sta;
+                // robot.motor_r_wheel->commu_sta + \
+                // robot.motor_rb->commu_sta + \
+                // robot.motor_rf->commu_sta;
 
-    // if (robot.run_mode == ROBOT_STOP) {
-    //     robot.motor_l_wheel->EN = 0;
-    //     robot.motor_lb->EN = 0;
-    //     robot.motor_lf->EN = 0;
-    //     robot.motor_r_wheel->EN = 0;
-    //     robot.motor_rb->EN = 0;
-    //     robot.motor_rf->EN = 0;
-    //     return;
-    // }
+    if (errNum) robot.run_mode = ROBOT_STOP;
+    if (my_xbox.xbox_ctrl_msg.manual_stop) robot.run_mode = ROBOT_STOP;
+    if (robot.run_mode == ROBOT_STOP) {
+        AllMotor_Stop();
+        return;
+    }
+
+    //执行到这里，表示各通讯没问题
+    AllMotor_Torque();
+    robot.motor_lf->ref = 0.02;
 
     // //期望值
-    // if (xbox_ctrler.xbox_msg.right_y > 31000 && xbox_ctrler.xbox_msg.right_y < 35000)
+    // if (my_xbox.xbox_msg.right_y > 31000 && my_xbox.xbox_msg.right_y < 35000)
     //     robot.ref_v = 0;
-    // else robot.ref_v = (float)(xbox_ctrler.xbox_msg.right_y - 32768) / 32768 * 100;
+    // else robot.ref_v = (float)(my_xbox.xbox_msg.right_y - 32768) / 32768 * 100;
 
-    // //vmc
+    // //系统状态更新
     // pos_calc(robot.motor_lb->pos, robot.motor_lf->pos, robot.pos_l);
-    // spd_calc(robot.motor_lb->w, robot.motor_lf->pos, robot.motor_lb->w, robot.motor_lf->w,  robot.spd_l);
-
+    // spd_calc(robot.motor_lb->pos, robot.motor_lf->pos, robot.motor_lb->w, robot.motor_lf->w,  robot.spd_l);
     // robot.statesl[0] = robot.motor_l_wheel->pos;
-
-    // // lqrrr(robot.statesl, robot.pos_l[1], robot.ref_x, )
-    // // out_calc()
+    // robot.statesl[1] = robot.motor_l_wheel->w;
+    // robot.statesl[2] = robot.pos_l[0] - robot.imu->pitch - PI/2;
+    // robot.statesl[3] = robot.spd_l[0] - robot.imu->gyro[0];
+    // robot.statesl[4] = robot.imu->pitch;
+    // robot.statesl[5] = robot.imu->gyro[0];
 
     // pos_calc(robot.motor_rb->pos, robot.motor_rf->pos, robot.pos_r);
     // spd_calc(robot.motor_rb->w, robot.motor_rf->pos, robot.motor_rb->w, robot.motor_rf->w,  robot.spd_r);
+    // robot.statesr[0] = robot.motor_r_wheel->pos;
+    // robot.statesr[1] = robot.motor_r_wheel->w;
+    // robot.statesr[2] = robot.pos_r[0] - robot.imu->pitch - PI/2;
+    // robot.statesr[3] = robot.spd_r[0] - robot.imu->gyro[0];
+    // robot.statesr[4] = robot.imu->pitch;
+    // robot.statesr[5] = robot.imu->gyro[0];
 
+    // //控制部分
+    // double T, Tp, out[2]; //中间量
+
+    // lqrrr(robot.statesl, robot.pos_l[1], robot.ref_x, &T, &Tp);
+    // out_calc(0, Tp, robot.motor_lb->pos, robot.motor_lf->pos, out);
+    // robot.motor_l_wheel->ref = T;
+    // robot.motor_lb->ref = out[0];
+    // robot.motor_lf->ref = out[1];
+
+
+    // robot.statesr[0] = robot.motor_r_wheel->pos;
+    // lqrrr(robot.statesr, robot.pos_r[1], robot.ref_x, &T, &Tp);
+    // out_calc(0, Tp, robot.motor_rb->pos, robot.motor_rf->pos, out);
+    // robot.motor_r_wheel->ref = T;
+    // robot.motor_rb->ref = out[0];
+    // robot.motor_rf->ref = out[1];
 
 
     #endif

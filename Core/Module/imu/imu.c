@@ -1,19 +1,29 @@
 #include "imu.h"
 #include "cvector.h"
 #include "bsp.h"
-#include "myfunc.h"
+#include "common.h"
 #include "inv_mpu.h"
 #include "inv_mpu_dmp_motion_driver.h"
 cvector* my_imu;
 
-void imu_data_get(imu_atk* obj)
+inline static void imu_ok(imu_atk* obj) { obj->sta = 0; }
+inline static void imu_err(imu_atk* obj) { obj->sta = 1; }
+
+/**
+ * @brief imu数据获取
+ * @param obj imu对象指针 
+ * @return 0数据获取过程正常 1 数据获取过程中出错 
+ */
+uint8_t imu_data_get(imu_atk* obj)
 {
     uint8_t raw_gyro[6];uint16_t gyro[3];
     uint8_t raw_acc[6];uint16_t acc[3];
     uint8_t reg = 0;
+    uint8_t sta = 0;
     //温度数据
     long aa;
     mpu_get_temperature(&aa, NULL);
+    //if (mpu_get_temperature(&aa, NULL) == -1) return 1; //总是返回-1，待解决
     obj->temperature = aa / 65536.0; //q0转q16
     //角速度数据
     reg = READ_GYRO_REG;
@@ -53,15 +63,21 @@ void imu_data_get(imu_atk* obj)
         obj->acc[i] *= GRAVITY * ACCE_FSR / 32768.0;
         }
     }
-    //欧拉角
-    atk_ms6050_dmp_get_data(&obj->pitch, &obj->roll, &obj->yaw);
+    //dmp数据获取
+    atk_ms6050_dmp_get_data(&obj->pitch, &obj->roll, &obj->yaw); 
+    if (BSP_IIC_sta(IMU_IIC_PORT)) return 1;
+    return 0;
 }
 
 void IMU_Update(void)
 {
     for(uint8_t i = 0; i < my_imu->cv_len; i++){
         imu_atk* obj = *(imu_atk**)cvector_val_at(my_imu, i);
-        imu_data_get(obj);
+        if (!imu_data_get(obj)) imu_ok(obj);
+        else {
+            imu_err(obj);
+            return;
+        }
         float pitch = atan2((float)(0 - obj->acc[0]), obj->acc[2]);
         obj->mahony_handler.q0 = cos(pitch / 2);
         obj->mahony_handler.q1 = 0;
@@ -91,7 +107,7 @@ void IMU_Init()
     // Master_WriteReg_Byte(IMU_IIC_PORT, PWR_CTRL_REG_1, 0x01);
 }
 
-//内部含vtaskdelay，要在调度器开启后使用
+//内部含vtaskdelay，要在调度器开启后使用，故写在线程创建的入口处
 void imu_dmp_init()
 {
     atk_ms6050_dmp_init();

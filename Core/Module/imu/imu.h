@@ -41,6 +41,7 @@ typedef struct imu_atk_s
     MahonyAHRS mahony_handler;
     uint8_t init_sta;
     float eule_deg[3];
+    uint8_t sta;
 }imu_atk;
 
 void IMU_Update(void);

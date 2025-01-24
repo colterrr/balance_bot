@@ -43,7 +43,7 @@
 //#include "msp430_interrupt.h"
 #include "imu.h"                    /* °üº¬Ïà¹ØÍ·ÎÄ¼þ */
 //#include "./SYSTEM/delay/delay.h"
-#include "myfunc.h"
+#include "common.h"
 #include "inv_mpu_dmp_motion_driver.h"
 #define i2c_write   atk_ms6050_write                        /* IICÐ´Í¨Ñ¶º¯Êý */
 #define i2c_read    atk_ms6050_read                         /* IIC¶ÁÍ¨Ñ¶º¯Êý */
@@ -60,7 +60,6 @@ static inline int reg_int_cb(struct int_param_s *int_param) /* ÖÐ¶Ï»Øµ÷º¯Êý£¨Î´Ê
 /* labs is already defined by TI's toolchain. */
 /* fabs is for doubles. fabsf is for floats. */
 #define fabs        fabsf
-#define min(a,b) ((a<b)?a:b)
 #elif defined EMPL_TARGET_MSP430
 #include "msp430.h"
 #include "msp430_i2c.h"

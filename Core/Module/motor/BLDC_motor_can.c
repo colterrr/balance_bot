@@ -7,6 +7,11 @@
 
 cvector* BLDC_MotorCan_ins;
 
+static void BLDC_motor_can_lost(void* obj)
+{
+    ((BLDC_motor_can*)obj)->commu_sta = 1;
+}
+
 /**
  * @brief 电机传回数据处理
  * @param id 
@@ -18,7 +23,7 @@ void BLDC_MotorCan_Update(uint16_t id, uint8_t* pdata, uint16_t len)
     if (len != 8) return; //数据长度不对，舍弃
     for (uint8_t i = 0;i < BLDC_MotorCan_ins->cv_len; i++){
         BLDC_motor_can* obj = *(BLDC_motor_can**)cvector_val_at(BLDC_MotorCan_ins, i);
-        if (obj->config.id == id){
+        if (obj->config.rece_id == id){
             /*
             电机传回的数据报文：
             初始位置 
@@ -27,10 +32,11 @@ void BLDC_MotorCan_Update(uint16_t id, uint8_t* pdata, uint16_t len)
             */
             obj->pos = *(float*)pdata;
             obj->w = *(float*)(pdata + 4);
+            WatchDog_feed(obj->p_Wdog);
+            obj->commu_sta = 0;
         }
     }
 }
-
 
 void BLDC_MotorCan_Init()
 {
@@ -43,6 +49,8 @@ BLDC_motor_can* BLDC_MotorCan_Create(BLDC_motor_can_config config)
     BLDC_motor_can* obj = malloc(sizeof(BLDC_motor_can));
     memset(obj, 0, sizeof(BLDC_motor_can));
     obj->config = config;
+    obj->p_Wdog = WatchDog_Create(30, BLDC_motor_can_lost);
+    obj->p_Wdog->callback_arg = obj;
     cvector_pushback(BLDC_MotorCan_ins, &obj);
     return obj;
 }
@@ -62,7 +70,7 @@ void BLDC_MotorCan_Send()
         */        
         send_data[0] = obj->mode;
         *(float*)(send_data + 1) = obj->ref;
-        BSP_FDCAN_Transmit(send_data, 5, obj->config.id);
+        BSP_FDCAN_Transmit(send_data, FDCAN_DLC_BYTES_5, obj->config.trans_id);
     }
 
 }

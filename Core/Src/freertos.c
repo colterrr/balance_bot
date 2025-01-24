@@ -62,14 +62,14 @@ const osThreadAttr_t defaultTask_attributes = {
 osThreadId_t InstanceTaskHandle;
 const osThreadAttr_t InstanceTask_attributes = {
   .name = "InstanceTask",
-  .stack_size = 128 * 4,
+  .stack_size = 256 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
 /* Definitions for PeripheralTask */
 osThreadId_t PeripheralTaskHandle;
 const osThreadAttr_t PeripheralTask_attributes = {
   .name = "PeripheralTask",
-  .stack_size = 512 * 4,
+  .stack_size = 1024 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
 /* Definitions for WatchDogTask */
@@ -197,8 +197,8 @@ void StartPeripheralTask(void *argument)
   for(;;)
   {
     IMU_Update();
-    Encoder_Update();
-    //BLDC_MotorCan_Send();
+    //Encoder_Update();
+    BLDC_MotorCan_Send();
     vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(10));
   }
   /* USER CODE END StartPeripheralTask */

@@ -1,6 +1,6 @@
 #include "stdlib.h"
 #include "string.h"
-#include "myfunc.h"
+#include "common.h"
 #include "stdint.h"
 #include "main.h"
 
@@ -28,8 +28,8 @@
 //software_IIC_Port结构体下表示传输状态的枚举变量
 typedef enum
 {
-    IIC_ERR = 0,  //并没有发完或收完要求规模的数据，传输被接收方叫停
-    IIC_OK
+    IIC_OK = 0,  
+    IIC_ERR  //并没有发完或收完要求规模的数据，传输被接收方叫停
 }IIC_comu_status;
 
 typedef enum

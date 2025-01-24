@@ -2,29 +2,34 @@
 #define _BLDC_MOTOR_CAN_H_
 
 #include "stdint.h"
+#include "watch_dog.h"
 
 typedef enum
 {
-    TORQUE_MODE = 0,   //力矩输出模式
+    MOTOR_STOP = 0,
+    TORQUE_MODE,   //力矩输出模式
     SPEED_MODE,        //速度控制模式
     POSITION_MODE      //位置控制模式
 }Control_mode;
 
 typedef struct
 {
-    uint16_t id;
+    uint16_t trans_id; //发送指令要求id
+    uint16_t rece_id;  //回传数据包id
 }BLDC_motor_can_config;
 
 typedef struct
 {
     BLDC_motor_can_config config;
 
+    uint8_t commu_sta;
     Control_mode mode;
     float ref; //期望值
     
     float pos;
     float w;
 
+    WatchDog_s* p_Wdog; 
 }BLDC_motor_can;
 
 

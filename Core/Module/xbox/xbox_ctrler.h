@@ -34,14 +34,32 @@ typedef struct
     uint8_t share;
 } xbox_message;
 
+typedef struct 
+{
+    uint8_t last_a;
+    uint8_t last_b;
+}xbox_last_message;
+
+typedef struct controling_msg_s
+{
+    uint8_t manual_stop; //0表示继续 1表示手动停机
+    uint8_t jumping; //0表示触地 1表示执行跳跃中
+}controling_msg;
+
+
 typedef struct
 {
     uint8_t commu_on_flag; //与esp32通讯是否正常
     uint8_t online_flag;   //手柄是否连接
     xbox_message xbox_msg;
+    xbox_last_message xbox_last_msg;
     WatchDog_s* p_Wdog;
+    controling_msg xbox_ctrl_msg; //解析后的xbox特殊控制指令
 }xbox_ctrler_s;
 #pragma pack()
+
+#define up_A (!my_xbox.xbox_last_msg.last_a && my_xbox.xbox_msg.key_a)
+#define up_B (!my_xbox.xbox_last_msg.last_b && my_xbox.xbox_msg.key_b)
 
 void xbox_init();
 

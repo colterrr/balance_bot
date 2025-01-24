@@ -20,7 +20,7 @@ void BSP_PWM_Stop(uint8_t index);
 typedef void can_rx_func(uint16_t id, uint8_t* pdata, uint16_t len);
 void BSP_FDCAN_Init();
 void BSP_FDCAN_RegisterCallback(uint8_t can_module_index, can_rx_func* callback);
-void BSP_FDCAN_Transmit(uint8_t* pdata, uint16_t len, uint16_t id);
+void BSP_FDCAN_Transmit(uint8_t* pdata, uint32_t len, uint16_t id);
 
 // ****
 // GPIO
@@ -39,8 +39,8 @@ void BSP_GPIO_Init();
 //software_IIC_Port结构体下表示传输状态的枚举变量
 typedef enum
 {
-    IIC_ERR = 0,  //并没有发完或收完要求规模的数据，传输被接收方叫停
-    IIC_OK
+    IIC_OK = 0,  
+    IIC_ERR  //并没有发完或收完要求规模的数据，传输被接收方叫停
 }IIC_comu_status;
 void BSP_IIC_Init(void);
 void BSP_IIC_setpara(uint8_t port_index, GPIO_TypeDef* IOx_CL, uint16_t Pin_CL, GPIO_TypeDef* IOx_DA, uint16_t Pin_DA, uint8_t ADDR);

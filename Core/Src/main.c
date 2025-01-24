@@ -27,7 +27,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "myfunc.h"
+#include "common.h"
 #include "bsp.h"
 #include "module.h"
 #include "instance.h"

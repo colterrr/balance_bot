@@ -40,6 +40,7 @@
         "rt_nonfinite.h": "c",
         "rt_defines.h": "c",
         "stddef.h": "c",
-        "rtwtypes.h": "c"
+        "rtwtypes.h": "c",
+        "lqrrr.h": "c"
     }
 }

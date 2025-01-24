@@ -8,6 +8,7 @@ typedef void (*watchD_callback)(void*);
 typedef struct
 {
     watchD_callback f_callback;
+    void* callback_arg;
     uint16_t tick;
     uint16_t timeout; //规定超时的计数量，线程周期为10ms
 }WatchDog_s;
